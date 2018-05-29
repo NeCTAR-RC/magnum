@@ -1,0 +1,63 @@
+Description: Use python-kubernetes >= 1.0.0.
+Author: Chuck Short <zulcss@ubuntu.com>
+Forwarded: Not Needed.
+--- a/magnum/conductor/k8s_api.py
++++ b/magnum/conductor/k8s_api.py
+@@ -50,14 +50,14 @@
+             (self.ca_file, self.key_file,
+              self.cert_file) = create_client_files(cluster, context)
+ 
+-        config = k8s_config.Configuration()
++        config = k8s_config.ConfigurationObject()
+         config.host = cluster.api_address
+         config.ssl_ca_cert = self.ca_file.name
+         config.cert_file = self.cert_file.name
+         config.key_file = self.key_file.name
+ 
+         # build a connection with Kubernetes master
+-        client = api_client.ApiClient(configuration=config)
++        client = api_client.ApiClient(config=config)
+ 
+         super(K8sAPI, self).__init__(client)
+ 
+--- a/magnum/tests/functional/python_client_base.py
++++ b/magnum/tests/functional/python_client_base.py
+@@ -445,23 +445,23 @@
+     def setUpClass(cls):
+         super(BaseK8sTest, cls).setUpClass()
+         cls.kube_api_url = cls.cs.clusters.get(cls.cluster.uuid).api_address
+-        config = k8s_config.Configuration()
++        config = k8s_config.ConfigurationObject()
+         config.host = cls.kube_api_url
+         config.ssl_ca_cert = cls.ca_file
+         config.cert_file = cls.cert_file
+         config.key_file = cls.key_file
+-        k8s_client = api_client.ApiClient(configuration=config)
++        k8s_client = api_client.ApiClient(config=config)
+         cls.k8s_api = core_v1_api.CoreV1Api(k8s_client)
+ 
+     def setUp(self):
+         super(BaseK8sTest, self).setUp()
+         self.kube_api_url = self.cs.clusters.get(self.cluster.uuid).api_address
+-        config = k8s_config.Configuration()
++        config = k8s_config.ConfigurationObject()
+         config.host = self.kube_api_url
+         config.ssl_ca_cert = self.ca_file
+         config.cert_file = self.cert_file
+         config.key_file = self.key_file
+-        k8s_client = api_client.ApiClient(configuration=config)
++        k8s_client = api_client.ApiClient(config=config)
+         self.k8s_api = core_v1_api.CoreV1Api(k8s_client)
+         # TODO(coreypobrien) https://bugs.launchpad.net/magnum/+bug/1551824
+         utils.wait_for_condition(self._is_api_ready, 5, 600)
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -20,7 +20,7 @@
+ jsonpatch!=1.20,>=1.16 # BSD
+ keystoneauth1>=3.3.0 # Apache-2.0
+ keystonemiddleware>=4.17.0 # Apache-2.0
+-kubernetes>=4.0.0 # Apache-2.0
++kubernetes>=1.0.0 # Apache-2.0
+ marathon!=0.9.1,>=0.8.6 # MIT
+ netaddr>=0.7.18 # BSD
+ oslo.concurrency>=3.25.0 # Apache-2.0

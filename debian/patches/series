@@ -1,0 +1,3 @@
+revert-move-to-docker-2.0.0.patch
+install-missing-files.patch
+use-lower-kubernetesclient.patch

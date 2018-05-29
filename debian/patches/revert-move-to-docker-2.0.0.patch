@@ -1,0 +1,83 @@
+Description: Revert to using python-docker 1.8.1
+  Magnum switched to using the u-c version of python-docker (2.4.2).
+  While that's available in experimental, the corresponding
+  docker-compose is not available. Instead, this patches senlin's
+  docker client to use python-docker 1.9.0 which is what we currently
+  have in the archive.
+  This reverts commit 1e0785c32089229a65f0a3d469f899440d7af2a9.
+Author: Corey Bryant <corey.bryant@canonical.com>
+Forwarded: no
+Last-Update: 2017-08-24
+
+--- a/magnum/common/docker_utils.py
++++ b/magnum/common/docker_utils.py
+@@ -12,6 +12,7 @@
+ # License for the specific language governing permissions and limitations
+ # under the License.
+ import contextlib
++import lsb_release
+ 
+ import docker
+ from docker.utils import utils
+@@ -77,7 +78,12 @@
+         magnum_cert.close()
+ 
+ 
+-class DockerHTTPClient(docker.APIClient):
++if 'xenial' in lsb_release.get_lsb_information()['CODENAME']:
++    docker_client = docker.Client
++else:
++    docker_client = docker.APIClient
++
++class DockerHTTPClient(docker_client):
+     def __init__(self, url='unix://var/run/docker.sock',
+                  ver=CONF.docker.docker_remote_api_version,
+                  timeout=CONF.docker.default_timeout,
+--- a/magnum/tests/unit/common/test_docker_utils.py
++++ b/magnum/tests/unit/common/test_docker_utils.py
+@@ -13,6 +13,7 @@
+ # under the License.
+ 
+ import docker
++import lsb_release
+ import mock
+ 
+ from magnum.common import docker_utils
+@@ -73,8 +74,13 @@
+         self.assertEqual(CONF.docker.default_timeout,
+                          client.timeout)
+ 
+-    @mock.patch.object(docker.APIClient, 'inspect_container')
+-    @mock.patch.object(docker.APIClient, 'containers')
++    if 'xenial' in lsb_release.get_lsb_information()['CODENAME']:
++        docker_client = docker.Client
++    else:
++        docker_client = docker.APIClient
++
++    @mock.patch.object(docker_client, 'inspect_container')
++    @mock.patch.object(docker_client, 'containers')
+     def test_list_instances(self, mock_containers, mock_inspect):
+         client = docker_utils.DockerHTTPClient()
+ 
+@@ -90,8 +96,8 @@
+         mock_containers.assert_called_once_with(all=True)
+         mock_inspect.assert_has_calls([mock.call(x) for x in range(0, 3)])
+ 
+-    @mock.patch.object(docker.APIClient, 'inspect_container')
+-    @mock.patch.object(docker.APIClient, 'containers')
++    @mock.patch.object(docker_client, 'inspect_container')
++    @mock.patch.object(docker_client, 'containers')
+     def test_list_instances_inspect(self, mock_containers, mock_inspect):
+         client = docker_utils.DockerHTTPClient()
+ 
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -13,7 +13,7 @@
+ alembic>=0.8.10 # MIT
+ cliff!=2.9.0,>=2.8.0 # Apache-2.0
+ decorator>=3.4.0 # BSD
+-docker>=2.4.2 # Apache-2.0
++docker-py>=1.8.1 # Apache-2.0
+ enum34>=1.0.4;python_version=='2.7' or python_version=='2.6' or python_version=='3.3' # BSD
+ eventlet!=0.18.3,!=0.20.1,<0.21.0,>=0.18.2 # MIT
+ iso8601>=0.1.11 # MIT

@@ -1,0 +1,52 @@
+#!/usr/bin/make -f
+
+include /usr/share/openstack-pkg-tools/pkgos.make
+export OSLO_PACKAGE_VERSION=$(shell dpkg-parsechangelog | grep Version: | cut -d' ' -f2 | sed -e 's/^[[:digit:]]*://' -e 's/[-].*//' -e 's/~/.0/' | head -n 1)
+
+%:
+	dh $@ --buildsystem=python_distutils --with python2,systemd,sphinxdoc
+
+override_dh_install:
+	rm -rf $(CURDIR)/debian/tmp
+	python2.7 setup.py install --install-layout=deb --root=$(CURDIR)/debian/tmp
+
+	dh_install --fail-missing
+	mkdir -p $(CURDIR)/debian/magnum-common/usr/share/magnum-common
+	PYTHONPATH=$(CURDIR)/debian/tmp/usr/lib/python2.7/dist-packages oslo-config-generator \
+		--config-file etc/magnum/magnum-config-generator.conf \
+		--output-file $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf oslo_concurrency lock_path /var/lock/magnum
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf keystone_authtoken auth_protocol http
+
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf DEFAULT pybasedir /usr/lib/python2.7/dist-packages/magnum
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf DEFAULT bindir /usr/bin
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf DEFAULT state_path /var/lib/magnum
+
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf api host 0.0.0.0
+
+	cp etc/magnum/api-paste.ini $(CURDIR)/debian/magnum-common/usr/share/magnum-common
+
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-common.postinst
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-common.config
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-api.postinst
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-api.config
+
+override_dh_clean:
+	rm -f debian/magnum-common.config debian/magnum-common.postinst debian/magnum-api.config debian/magnum-api.postinst
+	rm -rf debian/*.upstart debian/*.service debian/*.init
+
+override_dh_auto_test:
+ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
+	@echo "===> Running tests"
+	set -e ; set -x ; for i in 2.7 ; do \
+		PYMAJOR=`echo $$i | cut -d'.' -f1` ; \
+		echo "===> Testing with python$$i (python$$PYMAJOR)" ; \
+		rm -rf .testrepository ; \
+		testr-python$$PYMAJOR init ; \
+		TEMP_REZ=`mktemp -t` ; \
+		PYTHONPATH=$(CURDIR) PYTHON=python$$i testr-python$$PYMAJOR run --subunit --parallel | tee $$TEMP_REZ | subunit2pyunit ; \
+		cat $$TEMP_REZ | subunit-filter -s --no-passthrough | subunit-stats ; \
+		rm -f $$TEMP_REZ ; \
+		testr-python$$PYMAJOR slowest ; \
+	done
+endif

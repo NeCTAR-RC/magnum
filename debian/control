@@ -1,0 +1,229 @@
+Source: magnum
+Section: net
+Priority: extra
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: PKG OpenStack <openstack-devel@lists.alioth.debian.org>
+Uploaders:
+ Thomas Goirand <zigo@debian.org>,
+Build-Depends:
+ debhelper (>= 10~),
+ dh-python,
+ dh-systemd,
+ openstack-pkg-tools (>= 53~),
+ po-debconf,
+ python-all,
+ python-pbr (>= 2.0.0),
+ python-setuptools (>= 24.0.0),
+ python-sphinx (>= 1.6.2),
+Build-Depends-Indep:
+ alembic (>= 0.8.10),
+ bandit,
+ lsb-release,
+ python-alembic (>= 0.8.10),
+ python-babel (>= 2.3.4),
+ python-barbicanclient (>= 4.0.0),
+ python-bashate (>= 0.5.1),
+ python-cliff (>= 2.8.0),
+ python-coverage (>= 4.0),
+ python-cryptography (>= 1.9),
+ python-decorator (>= 3.4.0),
+ python-doc8 (>= 0.6.0),
+ python-docker (>= 1.8.1),
+ python-enum34 (>= 1.0.4),
+ python-eventlet (>= 0.18.2),
+ python-fixtures (>= 3.0.0),
+ python-glanceclient (>= 1:2.8.0),
+ python-greenlet (>= 0.3.2),
+ python-hacking (>= 0.12.0),
+ python-heatclient (>= 1.10.0),
+ python-iso8601 (>= 0.1.11),
+ python-jsonpatch (>= 1.16),
+ python-kubernetes (>= 2.0.0),
+ python-keystoneauth1 (>= 3.3.0),
+ python-keystoneclient (>= 1:3.8.0),
+ python-keystonemiddleware (>= 4.17.0),
+ python-marathon (>= 0.8.6),
+ python-mock (>= 2.0.0),
+ python-netaddr (>= 0.7.18),
+ python-neutronclient (>= 1:6.3.0),
+ python-novaclient (>= 2:9.1.0),
+ python-openstackdocstheme (>= 1.18.1),
+ python-os-api-ref (>= 1.4.0),
+ python-os-testr (>= 1.0.0),
+ python-oslo.concurrency (>= 3.25.0),
+ python-oslo.config (>= 1:5.1.0),
+ python-oslo.context (>= 1:2.19.2),
+ python-oslo.db (>= 4.27.0),
+ python-oslo.i18n (>= 3.15.3),
+ python-oslo.log (>= 3.36.0),
+ python-oslo.messaging (>= 5.29.0),
+ python-oslo.middleware (>= 3.31.0),
+ python-oslo.policy (>= 1.30.0),
+ python-oslo.reports (>= 1.18.0),
+ python-oslo.serialization (>= 2.18.0),
+ python-oslo.service (>= 1.24.0),
+ python-oslo.utils (>= 3.33.0),
+ python-oslo.versionedobjects (>= 1.31.2),
+ python-oslotest (>= 1:3.2.0),
+ python-osprofiler (>= 1.4.0),
+ python-paramiko (>= 2.0),
+ python-pecan (>= 1.0.0),
+ python-pep8,
+ python-prettytable,
+ python-pycadf (>= 1.1.0),
+ python-requests (>= 2.14.2),
+ python-six (>= 1.10.0),
+ python-sqlalchemy (>= 1.0.10),
+ python-stevedore (>= 1:1.20.0),
+ python-subunit (>= 1.0.0),
+ python-taskflow (>= 2.16.0),
+ python-tempest (>= 1:16.1.0),
+ python-testrepository (>= 0.0.18),
+ python-testscenarios (>= 0.4),
+ python-testtools (>= 2.2.0),
+ python-tz (>= 2013.6),
+ python-urllib3 (>= 1.15.1),
+ python-webob (>= 1:1.7.1),
+ python-werkzeug (>= 0.7),
+ python-wsme (>= 0.8.0),
+ python-yaml (>= 3.10),
+ subunit,
+ testrepository,
+Standards-Version: 4.1.2
+Vcs-Browser: https://git.launchpad.net/~ubuntu-server-dev/ubuntu/+source/magnum
+Vcs-Git: git://git.launchpad.net/~ubuntu-server-dev/ubuntu/+source/magnum
+Homepage: https://github.com/openstack/magnum
+XS-Testsuite: autopkgtest
+
+Package: magnum-api
+Architecture: all
+Depends:
+ magnum-common (= ${binary:Version}),
+ python-openstackclient,
+ q-text-as-data,
+ ${misc:Depends},
+ ${ostack-lsb-base},
+ ${python:Depends},
+Description: OpenStack containers as a service
+ Magnum is an OpenStack project which offers container orchestration engines
+ for deploying and managing containers as first class resources in OpenStack.
+ It features:
+  * Abstractions for bays, containers, nodes, pods, replication controllers,
+    and services
+  * Integration with Kubernetes and Docker for backend container technology
+  * Integration with Keystone for multi-tenant security
+  * Integration with Neutron for Kubernetes multi-tenancy network security
+ .
+ This package contains the API server.
+
+Package: magnum-common
+Architecture: all
+Depends:
+ adduser,
+ dbconfig-common,
+ debconf,
+ python-magnum (= ${binary:Version}),
+ ${misc:Depends},
+ ${python:Depends},
+Description: OpenStack containers as a service - API server
+ Magnum is an OpenStack project which offers container orchestration engines
+ for deploying and managing containers as first class resources in OpenStack.
+ It features:
+  * Abstractions for bays, containers, nodes, pods, replication controllers,
+    and services
+  * Integration with Kubernetes and Docker for backend container technology
+  * Integration with Keystone for multi-tenant security
+  * Integration with Neutron for Kubernetes multi-tenancy network security
+ .
+ This package contains common files for the engine and the conductor.
+
+Package: magnum-conductor
+Architecture: all
+Depends:
+ magnum-common (= ${binary:Version}),
+ ${misc:Depends},
+ ${ostack-lsb-base},
+ ${python:Depends},
+Description: OpenStack containers as a service - conductor
+ Magnum is an OpenStack project which offers container orchestration engines
+ for deploying and managing containers as first class resources in OpenStack.
+ It features:
+  * Abstractions for bays, containers, nodes, pods, replication controllers,
+    and services
+  * Integration with Kubernetes and Docker for backend container technology
+  * Integration with Keystone for multi-tenant security
+  * Integration with Neutron for Kubernetes multi-tenancy network security
+ .
+ This package contains the conductor server.
+
+Package: python-magnum
+Section: python
+Architecture: all
+Depends:
+ alembic (>= 0.8.10),
+ python-alembic (>= 0.8.10),
+ python-babel (>= 2.3.4),
+ python-barbicanclient (>= 4.0.0),
+ python-cliff (>= 2.8.0),
+ python-cryptography (>= 1.9),
+ python-decorator (>= 3.4.0),
+ python-docker (>= 1.8.1),
+ python-enum34 (>= 1.0.4),
+ python-eventlet (>= 0.18.2),
+ python-glanceclient (>= 1:2.8.0),
+ python-greenlet (>= 0.3.2),
+ python-heatclient (>= 1.10.0),
+ python-iso8601 (>= 0.1.11),
+ python-jsonpatch (>= 1.16),
+ python-kubernetes (>= 2.0.0),
+ python-keystoneauth1 (>= 3.3.0),
+ python-keystoneclient (>= 1:3.8.0),
+ python-keystonemiddleware (>= 4.17.0),
+ python-marathon (>= 0.8.6),
+ python-netaddr (>= 0.7.18),
+ python-neutronclient (>= 1:6.3.0),
+ python-novaclient (>= 2:9.1.0),
+ python-oslo.concurrency (>= 3.25.0),
+ python-oslo.config (>= 1:5.1.0),
+ python-oslo.context (>= 1:2.19.2),
+ python-oslo.db (>= 4.27.0),
+ python-oslo.i18n (>= 3.15.3),
+ python-oslo.log (>= 3.36.0),
+ python-oslo.messaging (>= 5.29.0),
+ python-oslo.middleware (>= 3.31.0),
+ python-oslo.policy (>= 1.30.0),
+ python-oslo.reports (>= 1.18.0),
+ python-oslo.serialization (>= 2.18.0),
+ python-oslo.service (>= 1.24.0),
+ python-oslo.utils (>= 3.33.0),
+ python-oslo.versionedobjects (>= 1.31.2),
+ python-osprofiler (>= 1.4.0),
+ python-paramiko (>= 2.0),
+ python-pbr (>= 2.0.0),
+ python-pecan (>= 1.0.0),
+ python-prettytable,
+ python-pycadf (>= 1.1.0),
+ python-requests (>= 2.14.2),
+ python-setuptools (>= 24.0.0),
+ python-six (>= 1.10.0),
+ python-sqlalchemy (>= 1.0.10),
+ python-stevedore (>= 1:1.20.0),
+ python-taskflow (>= 2.16.0),
+ python-urllib3 (>= 1.15.1),
+ python-webob (>= 1:1.7.1),
+ python-werkzeug (>= 0.7),
+ python-wsme (>= 0.8.0),
+ python-yaml (>= 3.10),
+ ${misc:Depends},
+ ${python:Depends},
+Description: OpenStack containers as a service - Python library
+ Magnum is an OpenStack project which offers container orchestration engines
+ for deploying and managing containers as first class resources in OpenStack.
+ It features:
+  * Abstractions for bays, containers, nodes, pods, replication controllers,
+    and services
+  * Integration with Kubernetes and Docker for backend container technology
+  * Integration with Keystone for multi-tenant security
+  * Integration with Neutron for Kubernetes multi-tenancy network security
+ .
+ This package contains the Python code.

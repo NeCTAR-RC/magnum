@@ -1,0 +1,4 @@
+version=3
+opts="uversionmangle=s/\.(b|rc)/~$1/" \
+ http://tarballs.openstack.org/magnum magnum-(\d.*)\.tar\.gz
+ 

@@ -1,0 +1,3 @@
+Tests: python-magnum magnum-daemons
+Depends: python-magnum, magnum-common, magnum-api, magnum-conductor
+Restrictions: needs-root
