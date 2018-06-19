@@ -4,13 +4,6 @@ set -e
 
 #PKGOS-INCLUDE#
 
-if [ "$1" = "configure" ] || [ "$1" = "reconfigure" ] ; then
-	. /usr/share/debconf/confmodule
-	. /usr/share/dbconfig-common/dpkg/postinst
-
-	pkgos_register_endpoint_postinst magnum magnum container-infra "Container Infrastructure Management Service" 9511 "/v1"
-	db_stop
-fi
 
 #DEBHELPER#
 
