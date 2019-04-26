@@ -1115,7 +1115,7 @@ _`cloud_provider_tag`
   <https://github.com/kubernetes/cloud-provider-openstack/releases>`_ of
   the cloud-provider. The images are hosted `here
   <https://hub.docker.com/r/k8scloudprovider/openstack-cloud-controller-manager/tags/>`_.
-  Stein default: v0.2.0
+  Train default: v1.14.0
 
 _`etcd_tag`
   This label allows users to select `a specific etcd version,
@@ -2781,7 +2781,7 @@ The image currently has the following OS/software:
 +--------------------------+-----------+
 | Flannel                  | v0.9.0    |
 +--------------------------+-----------+
-| Cloud Provider OpenStack | v0.2.0    |
+| Cloud Provider OpenStack | v1.14.0   |
 +--------------------------+-----------+
 
 The following software are managed as systemd services:
