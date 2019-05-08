@@ -1,0 +1,17 @@
+#!/bin/bash
+#---------------------
+# Testing /usr/bin/magnum-* shebangs
+#---------------------
+set -e
+
+BINARIES=('magnum-api' 'magnum-conductor' 'magnum-db-manage' 'magnum-driver-manage')
+
+ret=0
+
+for binary in "${BINARIES[@]}"; do
+    if ! `dirname $0`/test-shebang.py $binary python3; then
+        ret=1
+    fi
+done
+
+exit $ret

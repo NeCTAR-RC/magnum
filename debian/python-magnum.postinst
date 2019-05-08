@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "configure" ] ; then
+	update-alternatives --install /usr/bin/magnum-api magnum-api /usr/bin/python2-magnum-api 300
+	update-alternatives --install /usr/bin/magnum-conductor magnum-conductor /usr/bin/python2-magnum-conductor 300
+	update-alternatives --install /usr/bin/magnum-db-manage magnum-db-manage /usr/bin/python2-magnum-db-manage 300
+	update-alternatives --install /usr/bin/magnum-driver-manage magnum-driver-manage /usr/bin/python2-magnum-driver-manage 300
+fi
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "disappear" ] ; then
+	update-alternatives --remove magnum-api /usr/bin/python2-magnum-api
+	update-alternatives --remove magnum-conductor /usr/bin/python2-magnum-conductor
+	update-alternatives --remove magnum-db-manage /usr/bin/python2-magnum-db-manage
+	update-alternatives --remove magnum-driver-manage /usr/bin/python2-magnum-driver-manage
+fi
+
+#DEBHELPER#
+
+exit 0

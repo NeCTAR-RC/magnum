@@ -1,0 +1,7 @@
+Tests: magnum-daemons, magnum-shebangs-py3
+Depends: python3-magnum, magnum-common, magnum-api, magnum-conductor
+Restrictions: needs-root
+
+Tests: magnum-daemons, magnum-shebangs-py2
+Depends: magnum-common, magnum-api, magnum-conductor
+Restrictions: needs-root
