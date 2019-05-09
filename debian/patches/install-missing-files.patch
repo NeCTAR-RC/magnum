@@ -9,4 +9,4 @@ Index: magnum/MANIFEST.in
 --- /dev/null
 +++ magnum/MANIFEST.in
 @@ -0,0 +1 @@
-+recursive-include magnum/db *
++recursive-include magnum *
