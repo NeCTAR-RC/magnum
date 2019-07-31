@@ -642,6 +642,8 @@ class Connection(api.Connection):
 
         try:
             return query.one()
+        # TODO(jake): QuotaNotFound can be project not found or quota not found
+        # need to differentiate
         except NoResultFound:
             msg = (_('project_id %(project_id)s resource %(resource)s.') %
                    {'project_id': project_id, 'resource': resource})
