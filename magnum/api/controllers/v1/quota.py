@@ -25,9 +25,12 @@ from magnum.api import utils as api_utils
 from magnum.api import validation
 from magnum.common import exception
 from magnum.common import policy
+import magnum.conf
 from magnum.i18n import _
 from magnum import objects
 from magnum.objects import fields
+
+CONF = magnum.conf.CONF
 
 
 class Quota(base.APIBase):
@@ -39,7 +42,10 @@ class Quota(base.APIBase):
     id = wsme.wsattr(wtypes.IntegerType(minimum=1))
     """unique id"""
 
-    hard_limit = wsme.wsattr(wtypes.IntegerType(minimum=1), default=1)
+    # TODO: this is not exactly correct but we only have 1 type of quota at
+    # the moment so this will do
+    hard_limit = wsme.wsattr(wtypes.IntegerType(minimum=1),
+                             default=CONF.quotas.max_clusters_per_project)
     """The hard limit for total number of clusters. Default to 1 if not set"""
 
     project_id = wsme.wsattr(wtypes.StringType(min_length=1, max_length=255),
@@ -156,10 +162,15 @@ class QuotaController(base.Controller):
         if not context.is_admin and project_id != context.project_id:
             raise exception.NotAuthorized()
 
-        quota = objects.Quota.get_quota_by_project_id_resource(context,
-                                                               project_id,
-                                                               resource)
-        return Quota.convert(quota)
+        try:
+            quota = objects.Quota.get_quota_by_project_id_resource(context,
+                                                                   project_id,
+                                                                   resource)
+            quota = Quota.convert(quota)
+        except exception.QuotaNotFound as e:
+            # If explicit quota was not set for the project, use default limit
+            quota = Quota()
+        return quota
 
     @expose.expose(Quota, body=Quota, status_code=201)
     @validation.enforce_valid_project_id_on_create()
