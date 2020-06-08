@@ -314,6 +314,8 @@ def is_octavia_enabled():
     admin_context = context.make_admin_context()
     keystone = KeystoneClientV3(admin_context)
 
+    return False
+
     try:
         octavia_svc = keystone.client.services.list(type='load-balancer')
     except Exception:
