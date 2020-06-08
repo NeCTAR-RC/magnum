@@ -26,7 +26,10 @@ octavia_client_opts = [
     cfg.StrOpt('endpoint_type',
                default='publicURL',
                help=_('Type of endpoint in Identity service catalog to use '
-                      'for communication with the OpenStack service.'))]
+                      'for communication with the OpenStack service.')),
+    cfg.BoolOpt('disabled',
+                default=False,
+                help=_('Disable any use of Octavia.'))]
 
 common_security_opts = [
     cfg.StrOpt('ca_file',
