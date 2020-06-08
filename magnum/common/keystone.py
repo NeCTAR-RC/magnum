@@ -309,6 +309,9 @@ def is_octavia_enabled():
     functionality for k8s cluster if Octavia service is deployed and enabled
     in the cloud.
     """
+    if CONF.octavia_client.disabled:
+        return False
+
     # Put the import here to avoid circular importing.
     from magnum.common import context
     admin_context = context.make_admin_context()
