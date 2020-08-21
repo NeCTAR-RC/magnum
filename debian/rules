@@ -1,0 +1,71 @@
+#!/usr/bin/make -f
+
+include /usr/share/openstack-pkg-tools/pkgos.make
+
+%:
+	dh $@ --buildsystem=python_distutils --with python3,systemd,sphinxdoc
+
+override_dh_clean:
+	rm -f debian/magnum-common.config debian/magnum-common.postinst debian/magnum-api.config debian/magnum-api.postinst
+	rm -rf debian/*.upstart debian/*.service debian/*.init
+
+override_dh_auto_install:
+	echo "Do nothing..."
+
+override_dh_auto_clean:
+	python3 setup.py clean
+
+override_dh_auto_test:
+	echo "Do nothing..."
+
+override_dh_auto_build:
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-common.postinst
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-common.config
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-api.postinst
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func magnum-api.config
+	pkgos-merge-templates magnum-api magnum endpoint
+	pkgos-merge-templates magnum-common magnum db rabbit ksat
+
+override_dh_install:
+	pkgos-dh_auto_install --no-py2
+	rm -rf $(CURDIR)/debian/python3-magnum/usr/etc
+
+ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
+	pkgos-dh_auto_test --no-py2
+endif
+
+	dh_install --fail-missing
+	mkdir -p $(CURDIR)/debian/magnum-common/usr/share/magnum-common
+	PYTHONPATH=$(CURDIR)/debian/python3-magnum/usr/lib/python3/dist-packages oslo-config-generator \
+		--output-file $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf \
+		--namespace magnum.conf \
+		--namespace oslo.concurrency \
+		--namespace oslo.db \
+		--namespace oslo.log \
+		--namespace oslo.messaging \
+		--namespace oslo.middleware.cors \
+		--namespace oslo.policy \
+		--namespace oslo.service.periodic_task \
+		--namespace oslo.service.service \
+		--namespace keystonemiddleware.auth_token
+	pkgos-readd-keystone-authtoken-missing-options $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf keystone_authtoken magnum
+
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf oslo_concurrency lock_path /var/lock/magnum
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf keystone_authtoken auth_protocol http
+
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf DEFAULT pybasedir /usr/lib/python3/dist-packages/magnum
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf DEFAULT bindir /usr/bin
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf DEFAULT state_path /var/lib/magnum
+
+	pkgos-fix-config-default $(CURDIR)/debian/magnum-common/usr/share/magnum-common/magnum.conf api host 0.0.0.0
+
+	PYTHONPATH=$(CURDIR)/debian/python3-magnum/usr/lib/python3/dist-packages oslopolicy-sample-generator \
+		--output-file $(CURDIR)/debian/magnum-common/usr/share/magnum-common/policy.json \
+		--format json \
+		--namespace magnum
+
+	cp etc/magnum/api-paste.ini $(CURDIR)/debian/magnum-common/usr/share/magnum-common
+
+
+override_dh_python3:
+	dh_python3 --shebang=/usr/bin/python3
