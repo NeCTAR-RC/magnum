@@ -635,10 +635,11 @@ class Connection(api.Connection):
         session = get_session()
         with session.begin():
             query = model_query(models.Quota, session=session)
+            query = query.filter_by(project_id=project_id).filter_by(
+                resource=resource)
 
             try:
-                query.filter_by(project_id=project_id).filter_by(
-                    resource=resource).one()
+                query.one()
             except NoResultFound:
                 msg = (_('project_id %(project_id)s resource %(resource)s.') %
                        {'project_id': project_id, 'resource': resource})
