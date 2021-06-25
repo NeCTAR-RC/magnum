@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55ec02f7_e9fb05ec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000104
+      },
+      "writtenOn": "2021-06-25T07:41:25Z",
+      "side": 1,
+      "message": "Overriding Jenkins, the pep8 failure will be addressed in the next patch",
+      "revId": "ec66dfc2cd444f927e70c79ef37ccc0dbaf35e52",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5"
+    }
+  ]
+}
