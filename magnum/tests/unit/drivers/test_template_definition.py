@@ -622,6 +622,8 @@ class AtomicK8sTemplateDefinitionTestCase(BaseK8sTemplateDefinitionTestCase):
         metrics_scraper_tag = mock_cluster.labels.get('metrics_scraper_tag')
         master_lb_allowed_cidrs = mock_cluster.labels.get(
             'master_lb_allowed_cidrs')
+        liveness_probe_tag = mock_cluster.labels.get(
+            'liveness_probe_tag')
 
         k8s_def = k8sa_tdef.AtomicK8sTemplateDefinition()
 
@@ -746,6 +748,7 @@ class AtomicK8sTemplateDefinitionTestCase(BaseK8sTemplateDefinitionTestCase):
             'metrics_scraper_tag': metrics_scraper_tag,
             'master_lb_allowed_cidrs': master_lb_allowed_cidrs,
             'fixed_subnet_cidr': '20.200.0.0/16',
+            'liveness_probe_tag': liveness_probe_tag,
         }}
         mock_get_params.assert_called_once_with(mock_context,
                                                 mock_cluster_template,
@@ -1177,6 +1180,8 @@ class AtomicK8sTemplateDefinitionTestCase(BaseK8sTemplateDefinitionTestCase):
 
         master_lb_allowed_cidrs = mock_cluster.labels.get(
             'master_lb_allowed_cidrs')
+        liveness_probe_tag = mock_cluster.labels.get(
+            'liveness_probe_tag')
 
         k8s_def = k8sa_tdef.AtomicK8sTemplateDefinition()
 
@@ -1303,6 +1308,7 @@ class AtomicK8sTemplateDefinitionTestCase(BaseK8sTemplateDefinitionTestCase):
             'metrics_scraper_tag': metrics_scraper_tag,
             'master_lb_allowed_cidrs': master_lb_allowed_cidrs,
             'fixed_subnet_cidr': '20.200.0.0/16',
+            'liveness_probe_tag': liveness_probe_tag,
         }}
         mock_get_params.assert_called_once_with(mock_context,
                                                 mock_cluster_template,

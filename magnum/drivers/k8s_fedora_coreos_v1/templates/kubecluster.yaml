@@ -848,32 +848,32 @@ parameters:
     description: tag of cinder csi plugin
       tag of the k8scloudprovider/cinder-csi-plugin container
       https://hub.docker.com/r/k8scloudprovider/cinder-csi-plugin/tags/
-    default: v1.18.0
+    default: v1.23.0
 
   csi_attacher_tag:
     type: string
     description: tag of csi attacher
-    default: v2.0.0
+    default: v3.3.0
 
   csi_provisioner_tag:
     type: string
     description: tag of csi provisioner
-    default: v1.4.0
+    default: v3.0.0
 
   csi_snapshotter_tag:
     type: string
     description: tag of csi snapshotter
-    default: v1.2.2
+    default: v4.2.1
 
   csi_resizer_tag:
     type: string
     description: tag of csi resizer
-    default: v0.3.0
+    default: v1.3.0
 
   csi_node_driver_registrar_tag:
     type: string
     description: tag of csi node driver registrar
-    default: v1.1.0
+    default: v2.4.0
 
   node_problem_detector_tag:
     type: string
@@ -990,6 +990,12 @@ parameters:
     type: comma_delimited_list
     description: The allowed CIDR list for master load balancer
     default: []
+
+  liveness_probe_tag:
+    type: string
+    description: tag of cinder csi liveness probe
+      tag of the k8s.gcr.io/sig-storage/liveness-probe container
+    default: v2.5.0
 
 resources:
 
@@ -1375,6 +1381,7 @@ resources:
           containerd_tarball_sha256: {get_param: containerd_tarball_sha256}
           post_install_manifest_url: {get_param: post_install_manifest_url}
           metrics_scraper_tag: {get_param: metrics_scraper_tag}
+          liveness_probe_tag: {get_param: liveness_probe_tag}
 
   kube_cluster_config:
     condition: create_cluster_resources
