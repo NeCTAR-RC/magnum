@@ -31,11 +31,15 @@ parameters:
     type: comma_delimited_list
     description: The allowed CIDR list for master load balancer
 
+  availability_zone:
+    type: string
+
 resources:
   loadbalancer:
     type: Magnum::Optional::Neutron::LBaaS::LoadBalancer
     properties:
       vip_subnet: {get_param: fixed_subnet}
+      availability_zone: {get_param: availability_zone}
 
   listener:
     condition: allowed_cidrs_disabled
