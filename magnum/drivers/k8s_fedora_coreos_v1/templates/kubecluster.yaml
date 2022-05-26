@@ -1042,6 +1042,7 @@ resources:
       octavia_provider: {get_param: octavia_provider}
       octavia_lb_algorithm: {get_param: octavia_lb_algorithm}
       octavia_lb_healthcheck: {get_param: octavia_lb_healthcheck}
+      availability_zone: {get_param: availability_zone}
 
   etcd_lb:
     condition: create_cluster_resources
@@ -1054,6 +1055,7 @@ resources:
       octavia_provider: {get_param: octavia_provider}
       octavia_lb_algorithm: {get_param: octavia_lb_algorithm}
       octavia_lb_healthcheck: {get_param: octavia_lb_healthcheck}
+      availability_zone: {get_param: availability_zone}
 
   ######################################################################
   #
