@@ -1017,6 +1017,7 @@ resources:
       protocol: {get_param: loadbalancing_protocol}
       port: {get_param: kubernetes_port}
       allowed_cidrs: {get_param: master_lb_allowed_cidrs}
+      availability_zone: {get_param: availability_zone}
 
   etcd_lb:
     condition: create_cluster_resources
@@ -1026,6 +1027,7 @@ resources:
       protocol: {get_param: loadbalancing_protocol}
       port: 2379
       allowed_cidrs: {get_param: master_lb_allowed_cidrs}
+      availability_zone: {get_param: availability_zone}
 
   ######################################################################
   #
