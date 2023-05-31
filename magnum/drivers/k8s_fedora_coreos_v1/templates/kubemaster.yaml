@@ -834,6 +834,7 @@ resources:
                   "$CLUSTER_UUID": {get_param: cluster_uuid}
                   "$MAGNUM_URL": {get_param: magnum_url}
                   "$VOLUME_DRIVER": {get_param: volume_driver}
+                  "$AVAILABILITY_ZONE": {get_param: availability_zone}
                   "$REGION_NAME": {get_param: region_name}
                   "$HTTP_PROXY": {get_param: http_proxy}
                   "$HTTPS_PROXY": {get_param: https_proxy}

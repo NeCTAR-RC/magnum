@@ -550,6 +550,16 @@ stringData:
     trust-id=$TRUST_ID
     region=$REGION_NAME
     ca-file=/etc/kubernetes/ca-bundle.crt
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: default
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+parameters:
+  availability: ${AVAILABILITY_ZONE}
+provisioner: cinder.csi.openstack.org
 EOF
 
     kubectl apply -f ${CINDER_CSI_DEPLOY}
