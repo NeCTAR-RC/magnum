@@ -91,11 +91,6 @@ def validate_external_network(cli, external_network):
         # Or the network is private.
         raise exception.ExternalNetworkNotFound(network=external_network)
 
-    if count > 1:
-        msg = _("Multiple external networks exist with same name '%s'. "
-                "Please use the external network ID instead.")
-        raise exception.Conflict(msg % external_network)
-
 
 def validate_fixed_network(cli, fixed_network):
     """Validate fixed network"""
