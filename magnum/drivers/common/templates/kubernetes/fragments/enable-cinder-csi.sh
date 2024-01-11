@@ -553,6 +553,7 @@ stringData:
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
+allowVolumeExpansion: true
 metadata:
   name: default
   annotations:
