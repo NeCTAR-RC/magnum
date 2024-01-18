@@ -561,6 +561,16 @@ metadata:
 parameters:
   availability: ${AVAILABILITY_ZONE}
 provisioner: cinder.csi.openstack.org
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+allowVolumeExpansion: true
+metadata:
+  name: encrypted
+parameters:
+  availability: ${AVAILABILITY_ZONE}
+  type: encrypted
+provisioner: cinder.csi.openstack.org
 EOF
 
     kubectl apply -f ${CINDER_CSI_DEPLOY}
