@@ -42,6 +42,11 @@ conditions:
       data:
         calico_tag: {get_param: calico_tag}
 
+  lb_amphora:
+    equals:
+      - get_param: octavia_provider
+      - "amphora"
+
 parameters:
 
   # needs to become a list if we want to join master nodes?
@@ -1048,7 +1053,7 @@ resources:
       octavia_provider: {get_param: octavia_provider}
       octavia_lb_algorithm: {get_param: octavia_lb_algorithm}
       octavia_lb_healthcheck: {get_param: octavia_lb_healthcheck}
-      availability_zone: {get_param: availability_zone}
+      availability_zone: {if: [lb_amphora, {get_param: availability_zone}, '']}
 
   etcd_lb:
     condition: create_cluster_resources
@@ -1061,7 +1066,7 @@ resources:
       octavia_provider: {get_param: octavia_provider}
       octavia_lb_algorithm: {get_param: octavia_lb_algorithm}
       octavia_lb_healthcheck: {get_param: octavia_lb_healthcheck}
-      availability_zone: {get_param: availability_zone}
+      availability_zone: {if: [lb_amphora, {get_param: availability_zone}, '']}
 
   ######################################################################
   #
