@@ -1,5 +1,5 @@
 # etcd service load balancer doesn't have floating IP associated.
-heat_template_version: queens
+heat_template_version: wallaby
 
 conditions:
   allowed_cidrs_enabled:
@@ -15,6 +15,8 @@ conditions:
       equals:
       - get_param: octavia_lb_healthcheck
       - []
+
+  has_availability_zone: {not: {equals: [{get_param: availability_zone}, ""]}}
 
 parameters:
 
@@ -48,6 +50,8 @@ parameters:
 
   availability_zone:
     type: string
+    description: Octavia load balancer availability zone
+    default: ''
 
 resources:
   loadbalancer:
@@ -55,7 +59,7 @@ resources:
     properties:
       provider: {get_param: octavia_provider}
       vip_subnet: {get_param: fixed_subnet}
-      availability_zone: {get_param: availability_zone}
+      availability_zone: {if: [has_availability_zone, {get_param: availability_zone}]}
 
   listener:
     condition: allowed_cidrs_disabled
