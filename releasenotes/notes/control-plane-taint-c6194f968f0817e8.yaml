@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    The taint for control plane nodes have been updated from
+    'node-role.kubernetes.io/master' to
+    'node-role.kubernetes.io/control-plane', in line with upstream. Starting
+    from v1.28, the old taint no longer passes conformance.
