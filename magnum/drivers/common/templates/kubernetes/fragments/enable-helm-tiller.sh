@@ -149,7 +149,7 @@ spec:
         operator: Exists
       # run only on master nodes
       nodeSelector:
-        node-role.kubernetes.io/master: ""
+        node-role.kubernetes.io/control-plane: ""
       volumes:
       - name: tiller-certs
         secret:
