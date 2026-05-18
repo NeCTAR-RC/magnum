@@ -35,10 +35,13 @@ REST_API_VERSION_HISTORY = """REST API Version History:
     * 1.10 - Allow nodegroups with 0 nodes
     * 1.11 - Remove bay and baymodel objects
     * 1.12 - Add credential API
+    * 1.13 - Not implemented in this branch (upstream: add cluster_id
+             field to cluster, deprecate stack_id)
+    * 1.14 - Add node_labels and node_taints to nodegroup
 """
 
 BASE_VER = '1.1'
-CURRENT_MAX_VER = '1.12'
+CURRENT_MAX_VER = '1.14'
 
 
 class Version(object):

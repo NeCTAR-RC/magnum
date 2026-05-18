@@ -118,3 +118,26 @@ user documentation.
   Add credential API
 
   Allow the cluster to have its associated credential rotated.
+
+
+1.13
+---
+
+  Not implemented in this branch
+
+  Upstream microversion 1.13 introduces ``cluster_id`` and deprecates
+  ``stack_id``. The number is skipped in this branch so that
+  ``node_labels`` and ``node_taints`` keep their upstream microversion
+  of 1.14.
+
+
+1.14
+---
+
+  Add node_labels and node_taints to nodegroup
+
+  Allow users to set Kubernetes node labels and taints on the nodes that
+  belong to a worker nodegroup. node_labels is a dict of string-to-string;
+  node_taints is a list of {key, value, effect} objects where effect is one
+  of NoSchedule, PreferNoSchedule or NoExecute. Both fields are nullable
+  and may be supplied on create or updated via PATCH.
