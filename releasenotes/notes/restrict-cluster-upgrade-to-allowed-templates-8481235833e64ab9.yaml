@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Operators can now restrict the set of cluster templates a cluster
+    may be upgraded to. Setting the ``upgrade_targets`` label on a
+    cluster template to a comma-separated list of cluster template
+    UUIDs constrains upgrades of any cluster using that template to
+    those targets only. When the label is absent the previous
+    behaviour is preserved and any template may be used as an upgrade
+    target. The restriction applies to all users, including admins.

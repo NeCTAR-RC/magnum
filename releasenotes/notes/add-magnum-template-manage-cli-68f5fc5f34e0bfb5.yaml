@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    A new ``magnum-template-manage`` operator CLI is provided for managing
+    the ``upgrade_targets`` label on cluster templates. The
+    ``set-upgrade-targets`` subcommand accepts a template UUID or name, or
+    ``--all`` to apply to every template (useful for setting
+    ``--targets ''`` across the board to block all cluster upgrades). The
+    tool writes directly to the database and bypasses the API-level
+    restriction that normally prevents updates to cluster templates
+    already referenced by an existing cluster.

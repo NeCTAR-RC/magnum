@@ -346,3 +346,66 @@ class TestClusterUpgrade(api_base.FunctionalTest):
                                            "X-Roles": "member"},
                                   expect_errors=True)
         self.assertEqual(409, response.status_code)
+
+    def _make_cluster_with_upgrade_targets(self, targets, suffix):
+        src_uuid = uuidutils.generate_uuid()
+        cluster_uuid = uuidutils.generate_uuid()
+        obj_utils.create_test_cluster_template(
+            self.context, uuid=src_uuid, name='src_%s' % suffix,
+            labels={'upgrade_targets': targets})
+        return obj_utils.create_test_cluster(
+            self.context, name='cluster_%s' % suffix,
+            uuid=cluster_uuid, cluster_template_id=src_uuid)
+
+    def test_upgrade_target_in_allowed_list(self):
+        cluster = self._make_cluster_with_upgrade_targets(
+            self.cluster_template2.uuid, 'allowed_ok')
+        cluster_upgrade_req = {"cluster_template": "test_2"}
+        response = self.post_json('/clusters/%s/actions/upgrade' %
+                                  cluster.uuid,
+                                  cluster_upgrade_req,
+                                  headers={"Openstack-Api-Version":
+                                           "container-infra 1.8",
+                                           "X-Roles": "member"})
+        self.assertEqual(202, response.status_code)
+
+    def test_upgrade_target_not_in_allowed_list(self):
+        cluster = self._make_cluster_with_upgrade_targets(
+            '00000000-0000-0000-0000-000000000000', 'allowed_other')
+        cluster_upgrade_req = {"cluster_template": "test_2"}
+        response = self.post_json('/clusters/%s/actions/upgrade' %
+                                  cluster.uuid,
+                                  cluster_upgrade_req,
+                                  headers={"Openstack-Api-Version":
+                                           "container-infra 1.8",
+                                           "X-Roles": "member"},
+                                  expect_errors=True)
+        self.assertEqual(409, response.status_code)
+
+    def test_upgrade_target_empty_allowed_list(self):
+        cluster = self._make_cluster_with_upgrade_targets('', 'allowed_empty')
+        cluster_upgrade_req = {"cluster_template": "test_2"}
+        response = self.post_json('/clusters/%s/actions/upgrade' %
+                                  cluster.uuid,
+                                  cluster_upgrade_req,
+                                  headers={"Openstack-Api-Version":
+                                           "container-infra 1.8",
+                                           "X-Roles": "member"},
+                                  expect_errors=True)
+        self.assertEqual(409, response.status_code)
+
+    @mock.patch("magnum.common.policy.enforce")
+    @mock.patch("magnum.common.context.make_context")
+    def test_upgrade_target_admin_subject_to_allowed_list(
+            self, mock_context, mock_policy):
+        cluster = self._make_cluster_with_upgrade_targets(
+            '00000000-0000-0000-0000-000000000000', 'allowed_admin')
+        cluster_upgrade_req = {"cluster_template": "test_2"}
+        response = self.post_json('/clusters/%s/actions/upgrade' %
+                                  cluster.uuid,
+                                  cluster_upgrade_req,
+                                  headers={"Openstack-Api-Version":
+                                           "container-infra 1.8",
+                                           "X-Roles": "member"},
+                                  expect_errors=True)
+        self.assertEqual(409, response.status_code)

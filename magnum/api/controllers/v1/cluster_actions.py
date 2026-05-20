@@ -170,6 +170,8 @@ class ActionsController(base.Controller):
         new_cluster_template = api_utils.get_resource(
             'ClusterTemplate', cluster_upgrade_req.cluster_template)
 
+        self._check_upgrade_target_allowed(cluster, new_cluster_template)
+
         if (cluster_upgrade_req.nodegroup == wtypes.Unset or
                 not cluster_upgrade_req.nodegroup):
             # NOTE(ttsiouts): If the nodegroup is not specified
@@ -192,3 +194,29 @@ class ActionsController(base.Controller):
             cluster_upgrade_req.max_batch_size,
             nodegroup)
         return ClusterID(cluster.uuid)
+
+    @staticmethod
+    def _check_upgrade_target_allowed(cluster, new_cluster_template):
+        """Enforce a per-template operator-defined upgrade allow-list.
+
+        The current (source) cluster template may carry a label named
+        ``upgrade_targets`` whose value is a comma-separated list of cluster
+        template UUIDs permitted as upgrade targets. If the label is absent,
+        no restriction is applied. If the label is present, the new cluster
+        template's UUID must appear in the list. The restriction applies to
+        all users, including admins.
+        """
+        source_template = cluster.cluster_template
+        labels = source_template.labels or {}
+        raw = labels.get('upgrade_targets')
+        if raw is None:
+            return
+
+        allowed = [t.strip() for t in raw.split(',') if t.strip()]
+        if new_cluster_template.uuid in allowed:
+            return
+
+        raise exception.ClusterUpgradeTemplateNotAllowed(
+            cluster=cluster.uuid,
+            new_template=new_cluster_template.uuid,
+            allowed=', '.join(allowed) if allowed else '(none)')
