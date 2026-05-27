@@ -79,6 +79,43 @@ class TestValidation(base.BaseTestCase):
         self.assertEqual('Cluster type (vm, foo, kubernetes) not supported.',
                          exc.message)
 
+    @mock.patch('pecan.request')
+    @mock.patch('magnum.drivers.common.driver.Driver.get_driver_for_cluster')
+    def test_enforce_cluster_not_heat_driver_blocks_heat(
+            self, mock_get_driver, mock_pecan_request):
+        from magnum.drivers.heat import driver as heat_driver
+        mock_pecan_request.context.is_admin = False
+        mock_get_driver.return_value = mock.MagicMock(
+            spec=heat_driver.HeatDriver)
+        cluster = mock.MagicMock()
+
+        exc = self.assertRaises(
+            exception.NotSupported,
+            v.enforce_cluster_not_heat_driver, cluster, 'Doing the thing')
+        self.assertEqual('Doing the thing is not supported.', exc.message)
+
+    @mock.patch('pecan.request')
+    @mock.patch('magnum.drivers.common.driver.Driver.get_driver_for_cluster')
+    def test_enforce_cluster_not_heat_driver_admin_exempt(
+            self, mock_get_driver, mock_pecan_request):
+        mock_pecan_request.context.is_admin = True
+        cluster = mock.MagicMock()
+
+        self.assertIsNone(
+            v.enforce_cluster_not_heat_driver(cluster, 'Doing the thing'))
+        mock_get_driver.assert_not_called()
+
+    @mock.patch('pecan.request')
+    @mock.patch('magnum.drivers.common.driver.Driver.get_driver_for_cluster')
+    def test_enforce_cluster_not_heat_driver_allows_non_heat(
+            self, mock_get_driver, mock_pecan_request):
+        mock_pecan_request.context.is_admin = False
+        mock_get_driver.return_value = mock.MagicMock()  # not a HeatDriver
+        cluster = mock.MagicMock()
+
+        self.assertIsNone(
+            v.enforce_cluster_not_heat_driver(cluster, 'Doing the thing'))
+
     def _test_enforce_network_driver_types_create(
         self,
         network_driver_type,

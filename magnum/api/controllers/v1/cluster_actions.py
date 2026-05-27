@@ -18,9 +18,11 @@ from magnum.api.controllers import base
 from magnum.api.controllers.v1 import types
 from magnum.api import expose
 from magnum.api import utils as api_utils
+from magnum.api import validation
 from magnum.common import exception
 from magnum.common import policy
 from magnum.drivers.common.driver import Driver
+from magnum.i18n import _
 from magnum import objects
 
 
@@ -105,6 +107,8 @@ class ActionsController(base.Controller):
         cluster = api_utils.get_resource('Cluster', cluster_ident)
         policy.enforce(context, 'cluster:resize', cluster,
                        action='cluster:resize')
+        validation.enforce_cluster_not_heat_driver(
+            cluster, _('Resizing a cluster that uses the Magnum Heat driver'))
 
         if (cluster_resize_req.nodegroup == wtypes.Unset or
                 not cluster_resize_req.nodegroup):
@@ -166,6 +170,8 @@ class ActionsController(base.Controller):
         cluster = api_utils.get_resource('Cluster', cluster_ident)
         policy.enforce(context, 'cluster:upgrade', cluster,
                        action='cluster:upgrade')
+        validation.enforce_cluster_not_heat_driver(
+            cluster, _('Upgrading a cluster that uses the Magnum Heat driver'))
 
         new_cluster_template = api_utils.get_resource(
             'ClusterTemplate', cluster_upgrade_req.cluster_template)

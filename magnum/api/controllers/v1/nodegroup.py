@@ -25,10 +25,12 @@ from magnum.api.controllers.v1 import collection
 from magnum.api.controllers.v1 import types
 from magnum.api import expose
 from magnum.api import utils as api_utils
+from magnum.api import validation
 from magnum.common import clients
 from magnum.common import exception
 from magnum.common import policy
 import magnum.conf
+from magnum.i18n import _
 from magnum import objects
 from magnum.objects import fields
 
@@ -327,6 +329,9 @@ class NodeGroupController(base.Controller):
         policy.enforce(context, 'nodegroup:create', action='nodegroup:create')
 
         cluster = api_utils.get_resource('Cluster', cluster_id)
+        validation.enforce_cluster_not_heat_driver(
+            cluster, _('Creating a nodegroup on a cluster that uses the '
+                       'Magnum Heat driver'))
         # Before we start, we need to check that the cluster has an
         # api_address. If not, just fail.
         if 'api_address' not in cluster or not cluster.api_address:
@@ -381,7 +386,12 @@ class NodeGroupController(base.Controller):
         :param : resource name.
         :param values: a json document to update a nodegroup.
         """
+        context = pecan.request.context
+        policy.enforce(context, 'nodegroup:update', action='nodegroup:update')
         cluster = api_utils.get_resource('Cluster', cluster_id)
+        validation.enforce_cluster_not_heat_driver(
+            cluster, _('Updating a nodegroup on a cluster that uses the '
+                       'Magnum Heat driver'))
         nodegroup = self._patch(cluster.uuid, nodegroup_id, patch)
         pecan.request.rpcapi.nodegroup_update_async(cluster, nodegroup)
         return NodeGroup.convert(nodegroup)
@@ -398,6 +408,9 @@ class NodeGroupController(base.Controller):
         context = pecan.request.context
         policy.enforce(context, 'nodegroup:delete', action='nodegroup:delete')
         cluster = api_utils.get_resource('Cluster', cluster_id)
+        validation.enforce_cluster_not_heat_driver(
+            cluster, _('Deleting a nodegroup on a cluster that uses the '
+                       'Magnum Heat driver'))
         nodegroup = objects.NodeGroup.get(context, cluster.uuid, nodegroup_id)
         if nodegroup.is_default:
             raise exception.DeletingDefaultNGNotSupported()
@@ -405,7 +418,6 @@ class NodeGroupController(base.Controller):
 
     def _patch(self, cluster_uuid, nodegroup_id, patch):
         context = pecan.request.context
-        policy.enforce(context, 'nodegroup:update', action='nodegroup:update')
         nodegroup = objects.NodeGroup.get(context, cluster_uuid, nodegroup_id)
 
         try:

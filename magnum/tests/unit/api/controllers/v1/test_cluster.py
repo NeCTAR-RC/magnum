@@ -292,6 +292,10 @@ class TestPatch(api_base.FunctionalTest):
             attr_validator, 'validate_flavor_root_volume_size')
         self.mock_valid_flavor_disk = p.start()
         self.addCleanup(p.stop)
+        p = mock.patch(
+            'magnum.api.validation.enforce_cluster_not_heat_driver')
+        p.start()
+        self.addCleanup(p.stop)
 
     def _sim_rpc_cluster_update(self, cluster, node_count, health_status,
                                 health_status_reason, rollback=False):
@@ -1113,6 +1117,10 @@ class TestDelete(api_base.FunctionalTest):
         p = mock.patch.object(rpcapi.API, 'cluster_delete_async')
         self.mock_cluster_delete = p.start()
         self.mock_cluster_delete.side_effect = self._simulate_cluster_delete
+        self.addCleanup(p.stop)
+        p = mock.patch(
+            'magnum.api.validation.enforce_cluster_not_heat_driver')
+        p.start()
         self.addCleanup(p.stop)
 
     def _simulate_cluster_delete(self, cluster_uuid):

@@ -33,6 +33,10 @@ class TestClusterResize(api_base.FunctionalTest):
         self.mock_cluster_resize = p.start()
         self.mock_cluster_resize.side_effect = self._sim_rpc_cluster_resize
         self.addCleanup(p.stop)
+        p = mock.patch(
+            'magnum.api.validation.enforce_cluster_not_heat_driver')
+        p.start()
+        self.addCleanup(p.stop)
 
     def _sim_rpc_cluster_resize(self, cluster, node_count, nodes_to_remove,
                                 nodegroup, rollback=False):
@@ -204,6 +208,10 @@ class TestClusterUpgrade(api_base.FunctionalTest):
         p = mock.patch.object(rpcapi.API, 'cluster_upgrade')
         self.mock_cluster_upgrade = p.start()
         self.mock_cluster_upgrade.side_effect = self._sim_rpc_cluster_upgrade
+        self.addCleanup(p.stop)
+        p = mock.patch(
+            'magnum.api.validation.enforce_cluster_not_heat_driver')
+        p.start()
         self.addCleanup(p.stop)
 
     def _sim_rpc_cluster_upgrade(self, cluster, cluster_template, batch_size,

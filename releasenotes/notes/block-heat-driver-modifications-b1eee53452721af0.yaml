@@ -1,0 +1,10 @@
+---
+upgrade:
+  - |
+    Non-admin users can no longer modify clusters that use the deprecated
+    Heat driver. Cluster update, delete, resize, upgrade, and all nodegroup
+    create/update/delete operations on Heat-driver clusters now return
+    HTTP 400 ``NotSupported``. Administrators are exempt and can still
+    perform these operations, for example to clean up legacy clusters.
+    Users with Heat-driver clusters should migrate to a Cluster API based
+    driver.

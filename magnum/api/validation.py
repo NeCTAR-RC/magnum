@@ -24,6 +24,7 @@ from magnum.common import clients
 from magnum.common import exception
 import magnum.conf
 from magnum.drivers.common import driver
+from magnum.drivers.heat import driver as heat_driver
 from magnum.i18n import _
 from magnum import objects
 
@@ -46,6 +47,20 @@ def ct_not_found_to_bad_request():
             raise
 
     return wrapper
+
+
+def enforce_cluster_not_heat_driver(cluster, operation):
+    """Reject modifications to clusters that use the Heat driver.
+
+    The Heat driver is deprecated and read-only for end users; admins are
+    exempt so they can still clean up or remediate legacy clusters.
+    """
+    context = pecan.request.context
+    if context.is_admin:
+        return
+    cluster_driver = driver.Driver.get_driver_for_cluster(context, cluster)
+    if isinstance(cluster_driver, heat_driver.HeatDriver):
+        raise exception.NotSupported(operation=operation)
 
 
 def enforce_cluster_type_supported():

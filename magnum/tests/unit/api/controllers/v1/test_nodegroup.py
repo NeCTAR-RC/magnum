@@ -288,6 +288,10 @@ class TestPost(NodeGroupControllerTest):
             attr_validator, 'validate_flavor_root_volume_size')
         self.mock_valid_flavor_disk = p.start()
         self.addCleanup(p.stop)
+        p = mock.patch(
+            'magnum.api.validation.enforce_cluster_not_heat_driver')
+        p.start()
+        self.addCleanup(p.stop)
 
     def _simulate_nodegroup_create(self, cluster, nodegroup):
         nodegroup.create()
@@ -487,6 +491,10 @@ class TestDelete(NodeGroupControllerTest):
         self.mock_ng_delete.side_effect = self._simulate_nodegroup_delete
         self.addCleanup(p.stop)
         self.url = "/clusters/%s/nodegroups/" % self.cluster.uuid
+        p = mock.patch(
+            'magnum.api.validation.enforce_cluster_not_heat_driver')
+        p.start()
+        self.addCleanup(p.stop)
 
     def _simulate_nodegroup_delete(self, cluster, nodegroup):
         nodegroup.destroy()
@@ -570,6 +578,10 @@ class TestPatch(NodeGroupControllerTest):
         p = mock.patch.object(
             attr_validator, 'validate_flavor_root_volume_size')
         self.mock_valid_flavor_disk = p.start()
+        self.addCleanup(p.stop)
+        p = mock.patch(
+            'magnum.api.validation.enforce_cluster_not_heat_driver')
+        p.start()
         self.addCleanup(p.stop)
 
     def _simulate_nodegroup_update(self, cluster, nodegroup):

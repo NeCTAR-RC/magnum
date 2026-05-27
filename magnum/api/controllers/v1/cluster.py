@@ -674,6 +674,8 @@ class ClustersController(base.Controller):
                        action='cluster:update')
         policy.enforce(context, "cluster:update_health_status",
                        action="cluster:update_health_status")
+        validation.enforce_cluster_not_heat_driver(
+            cluster, _('Updating a cluster that uses the Magnum Heat driver'))
         try:
             cluster_dict = cluster.as_dict()
             new_cluster = Cluster(**api_utils.apply_jsonpatch(cluster_dict,
@@ -728,5 +730,7 @@ class ClustersController(base.Controller):
         cluster = api_utils.get_resource('Cluster', cluster_ident)
         policy.enforce(context, 'cluster:delete', cluster.as_dict(),
                        action='cluster:delete')
+        validation.enforce_cluster_not_heat_driver(
+            cluster, _('Deleting a cluster that uses the Magnum Heat driver'))
 
         pecan.request.rpcapi.cluster_delete_async(cluster.uuid)
